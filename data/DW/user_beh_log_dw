@@ -1,0 +1,106 @@
+--odps sql 
+--********************************************************************--
+--author:zhng25
+--create time:2025-02-06 20:02:35
+--********************************************************************--
+
+--DW层数据仓库建立
+--包含时间维度、行为等
+CREATE TABLE if not EXISTS dw_user_item_click_log (
+    user_id string comment '用户id',
+    item_id string comment '商品id',
+    brand_id string COMMENT '品牌id',
+    seller_id string COMMENT '商家id',
+    cate1 string COMMENT '一级类目'，
+    cate2 string COMMENT '二级类目',
+    op_time string COMMENT '点击时间'
+)PARTITIONED BY (ds string COMMENT '日期分区') LIFECYCLE 90;
+
+CREATE TABLE if not EXISTS dw_user_item_cart_log (
+    user_id string comment '用户id',
+    item_id string comment '商品id',
+    brand_id string COMMENT '品牌id',
+    seller_id string COMMENT '商家id',
+    cate1 string COMMENT '一级类目'，
+    cate2 string COMMENT '二级类目',
+    op_time string COMMENT '点击时间'
+)PARTITIONED BY (ds string COMMENT '日期分区') LIFECYCLE 90;
+
+CREATE TABLE if not EXISTS dw_user_item_collect_log (
+    user_id string comment '用户id',
+    item_id string comment '商品id',
+    brand_id string COMMENT '品牌id',
+    seller_id string COMMENT '商家id',
+    cate1 string COMMENT '一级类目'，
+    cate2 string COMMENT '二级类目',
+    op_time string COMMENT '点击时间'
+)PARTITIONED BY (ds string COMMENT '日期分区') LIFECYCLE 90;
+
+CREATE TABLE if not EXISTS dw_user_item_buy_log (
+    user_id string comment '用户id',
+    item_id string comment '商品id',
+    brand_id string COMMENT '品牌id',
+    seller_id string COMMENT '商家id',
+    cate1 string COMMENT '一级类目'，
+    cate2 string COMMENT '二级类目',
+    op_time string COMMENT '点击时间'
+)PARTITIONED BY (ds string COMMENT '日期分区') LIFECYCLE 90;
+
+
+-- click
+INSERT OVERWRITE TABLE dw_user_item_click_log PARTITION (ds)
+SELECT t1.user_id, t2.item_id, brand_id, seller_id, cate1, cate2, vtime, ds
+FROM (
+    SELECT user_id, item_id, vtime, to_char(TO_DATE(vtime, 'yyyy-mm-dd hh:mi:ss'), 'yyyymmdd') as ds
+    FROM user_item_beh_log 
+    WHERE action = 'click'
+) t1 
+JOIN(
+    SELECT item_id, brand_id, seller_id, SPLIT_PART(category, '-', 1) as cate1, SPLIT_PART(category, '-', 2) as cate2 
+    FROM item_dim
+)t2 on t1.item_id = t2.item_id 
+;
+
+-- cart
+INSERT OVERWRITE TABLE dw_user_item_cart_log PARTITION (ds)
+SELECT t1.user_id, t2.item_id, brand_id, seller_id, cate1, cate2, vtime, ds
+FROM (
+    SELECT user_id, item_id, vtime, to_char(TO_DATE(vtime, 'yyyy-mm-dd hh:mi:ss'), 'yyyymmdd') as ds
+    FROM user_item_beh_log 
+    WHERE action = 'cart'
+) t1 
+JOIN(
+    SELECT item_id, brand_id, seller_id, SPLIT_PART(category, '-', 1) as cate1, SPLIT_PART(category, '-', 2) as cate2 
+    FROM item_dim
+)t2 on t1.item_id = t2.item_id 
+;
+
+-- collect
+INSERT OVERWRITE TABLE dw_user_item_collect_log PARTITION (ds)
+SELECT t1.user_id, t2.item_id, brand_id, seller_id, cate1, cate2, vtime, ds
+FROM (
+    SELECT user_id, item_id, vtime, to_char(TO_DATE(vtime, 'yyyy-mm-dd hh:mi:ss'), 'yyyymmdd') as ds
+    FROM user_item_beh_log 
+    WHERE action = 'collect'
+) t1 
+JOIN(
+    SELECT item_id, brand_id, seller_id, SPLIT_PART(category, '-', 1) as cate1, SPLIT_PART(category, '-', 2) as cate2 
+    FROM item_dim
+)t2 on t1.item_id = t2.item_id 
+;
+
+-- buy
+INSERT OVERWRITE TABLE dw_user_item_buy_log PARTITION (ds)
+SELECT t1.user_id, t2.item_id, brand_id, seller_id, cate1, cate2, vtime, ds
+FROM (
+    SELECT user_id, item_id, vtime, to_char(TO_DATE(vtime, 'yyyy-mm-dd hh:mi:ss'), 'yyyymmdd') as ds
+    FROM user_item_beh_log 
+    WHERE action = 'alipay'
+) t1 
+JOIN(
+    SELECT item_id, brand_id, seller_id, SPLIT_PART(category, '-', 1) as cate1, SPLIT_PART(category, '-', 2) as cate2 
+    FROM item_dim
+)t2 on t1.item_id = t2.item_id 
+;
+
+select count(DISTINCT cate2) from dw_user_item_buy_log where ds='20130916' ;
