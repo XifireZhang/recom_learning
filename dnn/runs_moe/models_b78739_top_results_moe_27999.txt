@@ -1,0 +1,5 @@
+Top 1000 ratio of positive labels: 0.5486
+Top 3000 ratio of positive labels: 0.6351
+Top 5000 ratio of positive labels: 0.6946
+Top 10000 ratio of positive labels: 0.7541
+Top 50000 ratio of positive labels: 0.9162
