@@ -8,7 +8,7 @@ import pandas as pd
 
 def get_data():
     o = ODPS(
-            'LTAI5tDADMFPw1WQaXoFmN7v',
+            'id',
             'password',
             project='recom_learning',
             endpoint='https://service.cn-beijing.maxcompute.aliyun.com/api',
@@ -69,7 +69,7 @@ def my_collate_fn(batch):
 
 def get_data_test(brand_id):
     o = ODPS(
-            'LTAI5tDADMFPw1WQaXoFmN7v',
+            'id',
             'password',
             project='recom_learning',
             endpoint='https://service.cn-beijing.maxcompute.aliyun.com/api',
