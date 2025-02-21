@@ -110,7 +110,7 @@ if __name__ == "__main__":
     # 建立链接。
     o = ODPS(
         'LTAI5tDADMFPw1WQaXoFmN7v',
-        'ku51eCL192gTLugwyq1u4kAHlm8K9X',
+        'password',
         project='recom_learning',
         endpoint='https://service.cn-beijing.maxcompute.aliyun.com/api',
     )
