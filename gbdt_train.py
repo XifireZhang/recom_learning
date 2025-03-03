@@ -47,16 +47,13 @@ def train_lightgbm_and_save_models(df, output_file,
     X = df.drop(non_feature_cols + [label_col], axis=1)
     
     # 2. 切分训练集和测试集
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y,
-        test_size=test_size,
-        random_state=random_state
-    )
+    X_train_val, X_test, y_train_val, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_val, y_train, y_val = train_test_split(X_train_val, y_train_val, test_size=0.25, random_state=42)
     
     # 3. 准备 LightGBM 数据集
     train_data = lgb.Dataset(X_train, label=y_train)
-    valid_data = lgb.Dataset(X_test, label=y_test, reference=train_data)
-    
+    valid_data = lgb.Dataset(X_val, label=y_val, reference=train_data)
+                                     
     # 打开结果文件准备写入
     with open(output_file, 'w') as f:
         # 写入标题行
